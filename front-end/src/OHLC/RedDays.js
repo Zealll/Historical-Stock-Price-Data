@@ -25,15 +25,15 @@ const RedDays = props => {
     // console.log('LENGTH', props.stats.avgDownFromOpen.length, props.stats.avgPop.length)
 
     return (
-        <div>
-            <h3>Red Days: {props.stats.redDays}</h3>
+        <div className='red-days'>
+            <h3>Red Days: <span>{props.stats.redDays}</span></h3>
             <Day 
              color='red'
             //  days={props.stats.redDays}
-             avgPercentFromClose={avgDown / props.stats.avgDownFromOpen.length}
-             largestClosePercentage={props.stats.largestLosingClosePercentage}
-             smallestClosePercentage={props.stats.smallestLosingClosePercentage}
-             pop={avgPop / props.stats.avgPop.length}
+             avgPercentFromClose={props.stats.redDays === 0 ? 0 : avgDown / props.stats.avgDownFromOpen.length}
+             largestClosePercentage={props.stats.redDays === 0 ? 0 : props.stats.largestLosingClosePercentage}
+             smallestClosePercentage={props.stats.redDays === 0 ? 0 : props.stats.smallestLosingClosePercentage}
+             pop={props.stats.redDays === 0 ? 0 : avgPop / props.stats.avgPop.length}
             />
         </div>
     )
