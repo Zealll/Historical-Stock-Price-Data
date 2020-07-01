@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios'
 import GreenDays from './GreenDays.js'
 import RedDays from './RedDays.js'
+import Inputs from './Inputs.js'
 
 
 const Candles = props => {
@@ -9,15 +10,18 @@ const Candles = props => {
     const [close, setClose] = useState([])
     const [high, setHigh] = useState([])
     const [time, setTime] = useState([])
+    const [years, setYears] = useState(1)
+    const [gapPercentage, setGapPercentage] = useState(0)
+    const [ticker, setTicker] = useState('izea')
   
     let today = new Date()
     let to = new Date(`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`)
-    let from = new Date(`${today.getFullYear()-5}-${today.getMonth()+1}-${today.getDate()}`)
+    let from = new Date(`${today.getFullYear()-years}-${today.getMonth()+1}-${today.getDate()}`)
     // To convert regular date to UNIX we need to divide the result by 1000
   
     useEffect(() => {
       if(open.length === 0) {
-        axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=TOPS&resolution=D&from=${from/1000}&to=${to/1000}&token=brtn2j7rh5r9gcjm05e0`)
+        axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=${ticker.toUpperCase()}&resolution=D&from=${from/1000}&to=${to/1000}&token=brtn2j7rh5r9gcjm05e0`)
         .then(res => {setClose(res.data.c); setOpen(res.data.o); setTime(res.data.t); setHigh(res.data.h)})
       }
     },[])
@@ -47,7 +51,7 @@ const Candles = props => {
 
       
   
-      if (gapUp*100/closePrice > 30) {
+      if (gapUp*100/closePrice > gapPercentage) {
         let timeStamp = new Date(time[i]*1000).toLocaleDateString("en-US")
         // closeArr.push({
         //   prevDayClose: close[i-1],
@@ -61,7 +65,7 @@ const Candles = props => {
             let avgPop = (high[i] - open[i]) / open[i] * 100
             stats = {...stats, redDays: stats.redDays + 1, avgDownFromOpen: [...stats.avgDownFromOpen, avgDownFromOpen], avgPop: [...stats.avgPop, avgPop]}
             // temp.push(avgDownFromOpen)
-        } else  {
+        } else if(open[i] < close[i])  {
             let avgUpFromOpen = (close[i] - open[i]) / open[i] * 100
             stats = {...stats, greenDays: stats.greenDays + 1, avgUpFromOpen: [...stats.avgUpFromOpen, avgUpFromOpen]}
             temp.push(avgUpFromOpen)
@@ -69,16 +73,26 @@ const Candles = props => {
       }
     }
   
-    console.log('hello', stats, temp)
+    console.log('hello', gapPercentage)
 
     return (
-        <div className='flex'>
-            <RedDays stats={stats}/>
-            <div>
-                <h3>Red vs Green</h3>
-                <h6>{((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100).toFixed(1)}% / {100 - ((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100).toFixed(1)}%</h6>
+        <div className='wrapper'>
+            <Inputs 
+             ticker={ticker}
+             setTicker={setTicker}
+             years={years}
+             setYears={setYears}
+             gapPercentage={gapPercentage}
+             setGapPercentage={setGapPercentage}
+            />
+            <div className='flex'>
+                <RedDays stats={stats}/>
+                <div>
+                    <h3>Red vs Green</h3>
+                    <h6>{((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100).toFixed(1)}% / {(100 - ((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100)).toFixed(1)}%</h6>
+                </div>
+                <GreenDays stats={stats}/>
             </div>
-            <GreenDays stats={stats}/>
         </div>
     )
 }

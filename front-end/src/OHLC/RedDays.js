@@ -5,6 +5,7 @@ const RedDays = props => {
 
     let avgDown = 0
     let avgPop = 0
+    // console.log(props.stats.avgDownFromOpen)
 
     for (let i = 0; i < props.stats.avgDownFromOpen.length; i++) {
         avgDown += props.stats.avgDownFromOpen[i]
