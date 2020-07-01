@@ -4,6 +4,7 @@ import Day from './Day.js'
 const GreenDays = props => {
 
     let avgUp = 0
+    // console.log(props.stats.avgUpFromOpen)
 
     for (let i of props.stats.avgUpFromOpen) {
         avgUp += i
@@ -17,7 +18,7 @@ const GreenDays = props => {
         }
     }
 
-    console.log('AVG FROM GREEN', avgUp / props.stats.avgUpFromOpen.length)
+    // console.log('AVG FROM GREEN', avgUp / props.stats.avgUpFromOpen.length)
 
     return (
         <div>
