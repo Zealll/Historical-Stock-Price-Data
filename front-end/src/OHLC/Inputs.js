@@ -12,6 +12,7 @@ const Inputs = props => {
 
     const percentHandler = e => {
         props.setGapPercentage(Number(e.target.value))
+        props.setFilter(true)
     }
 
     return (
@@ -19,7 +20,7 @@ const Inputs = props => {
             <div className='input-flex second'>
                 <div className='input-flex'>
                     <h6>Ticker Symbol:</h6>
-                    <form>
+                    <form onSubmit={props.search}>
                         <input 
                         value={props.ticker.toUpperCase()}
                         onChange={changeHandler}
@@ -30,21 +31,25 @@ const Inputs = props => {
 
                 <div className='input-flex'>
                     <h6>Last</h6>
-                    <select onChange={yearHandler}>
-                        <option value={1}>1</option>
-                        <option value={2}>2</option>
-                        <option value={3}>3</option>
-                        <option value={4}>4</option>
-                        <option value={5}>5</option>
-                    </select>
-                    {props.years === 1 ? <h6>year</h6> : <h6>years</h6>}
+                    <form className='input-flex' onSubmit={props.search}>
+
+                        <select onChange={yearHandler}>
+                            <option value={1}>1</option>
+                            <option value={2}>2</option>
+                            <option value={3}>3</option>
+                            <option value={4}>4</option>
+                            <option value={5}>5</option>
+                        </select>
+                        {props.years === 1 ? <h6>year</h6> : <h6>years</h6>}
+                        {/* <button>hello</button> */}
+                    </form>
                 </div>
             </div>
 
-            <button>Analyze</button>
+            <button onClick={props.search}>Analyze</button>
             
 
-            <div className='input-flex'>
+            <div className='input-flex middle'>
                 <h6>Gap percentage above:</h6>
                 <select onChange={percentHandler}>
                     <option value={0}>0%</option>
