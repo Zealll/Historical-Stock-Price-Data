@@ -1,10 +1,13 @@
 import React, {useState, useEffect} from 'react'
 import axios from 'axios'
+import GreenDays from './GreenDays.js'
+import RedDays from './RedDays.js'
 
 
 const Candles = props => {
     const [open, setOpen] = useState([])
     const [close, setClose] = useState([])
+    const [high, setHigh] = useState([])
     const [time, setTime] = useState([])
   
     let today = new Date()
@@ -15,21 +18,22 @@ const Candles = props => {
     useEffect(() => {
       if(open.length === 0) {
         axios.get(`https://finnhub.io/api/v1/stock/candle?symbol=TOPS&resolution=D&from=${from/1000}&to=${to/1000}&token=brtn2j7rh5r9gcjm05e0`)
-        .then(res => {setClose(res.data.c); setOpen(res.data.o); setTime(res.data.t)})
+        .then(res => {setClose(res.data.c); setOpen(res.data.o); setTime(res.data.t); setHigh(res.data.h)})
       }
     },[])
   
     // console.log(close)
-    let closeArr = []
+    // let closeArr = []
     let stats = {
         redDays: 0,
         greenDays: 0,
-        avgDownFromClose: [],
-        avgUpFromClose: [],
+        avgDownFromOpen: [],
+        avgUpFromOpen: [],
         largestLosingClosePercentage: 0,
         largestGainClosePercentage: 0,
         smallestLosingClosePercentage: Infinity,
-        smallestGainClosePercentage: Infinity
+        smallestGainClosePercentage: Infinity,
+        avgPop: []
     }
 
     let temp = []
@@ -37,6 +41,7 @@ const Candles = props => {
     for (let i = 1; i < close.length; i++) {
       let openPrice = open[i]
       let closePrice = close[i-1]
+    //   let highOfDay = high[i]
   
       let gapUp = openPrice - closePrice
 
@@ -44,56 +49,37 @@ const Candles = props => {
   
       if (gapUp*100/closePrice > 30) {
         let timeStamp = new Date(time[i]*1000).toLocaleDateString("en-US")
-        closeArr.push({
-          prevDayClose: close[i-1],
-          gapDayOpen: open[i],
-          gapDayClose: close[i],
-          date: timeStamp
-        })
+        // closeArr.push({
+        //   prevDayClose: close[i-1],
+        //   gapDayOpen: open[i],
+        //   gapDayClose: close[i],
+        //   date: timeStamp
+        // })
 
         if (open[i] > close[i]) {
-            let avgDownFromClose = (open[i] - close[i]) / open[i] * 100
-            stats = {...stats, redDays: stats.redDays + 1, avgDownFromClose: [...stats.avgDownFromClose, avgDownFromClose]}
-            // temp.push(avgDownFromClose)
+            let avgDownFromOpen = (open[i] - close[i]) / open[i] * 100
+            let avgPop = (high[i] - open[i]) / open[i] * 100
+            stats = {...stats, redDays: stats.redDays + 1, avgDownFromOpen: [...stats.avgDownFromOpen, avgDownFromOpen], avgPop: [...stats.avgPop, avgPop]}
+            // temp.push(avgDownFromOpen)
         } else  {
-            let avgUpFromClose = (close[i] - open[i]) / open[i] * 100
-            stats = {...stats, greenDays: stats.greenDays + 1, avgUpFromClose: [...stats.avgUpFromClose, avgUpFromClose]}
-            temp.push(avgUpFromClose)
+            let avgUpFromOpen = (close[i] - open[i]) / open[i] * 100
+            stats = {...stats, greenDays: stats.greenDays + 1, avgUpFromOpen: [...stats.avgUpFromOpen, avgUpFromOpen]}
+            temp.push(avgUpFromOpen)
         }
       }
     }
   
-    console.log('hello',closeArr, stats, temp)
-
-    let avgDown = 0
-    let avgUp = 0
-
-    for (let i of stats.avgDownFromClose) {
-        avgDown += i
-
-        if (i > stats.largestLosingClosePercentage){
-            stats.largestLosingClosePercentage = i
-        }
-
-        if (i < stats.smallestLosingClosePercentage) {
-            stats.smallestLosingClosePercentage = i
-        }
-    }
-    for (let i of stats.avgUpFromClose) {
-        avgUp += i
-
-        if (i > stats.largestGainClosePercentage) {
-            stats.largestGainClosePercentage = i
-        }
-
-        if (i < stats.smallestGainClosePercentage) {
-            stats.smallestGainClosePercentage = i
-        }
-    }
-    // console.log(avgDown / stats.avgDownFromClose.length, avgUp / stats.avgUpFromClose.length)
+    console.log('hello', stats, temp)
 
     return (
-        <div></div>
+        <div className='flex'>
+            <RedDays stats={stats}/>
+            <div>
+                <h3>Red vs Green</h3>
+                <h6>{((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100).toFixed(1)}% / {100 - ((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100).toFixed(1)}%</h6>
+            </div>
+            <GreenDays stats={stats}/>
+        </div>
     )
 }
 
