@@ -1,4 +1,4 @@
-import React, {useSate, useEffect} from 'react'
+import React from 'react'
 import Day from './Day.js'
 
 const GreenDays = props => {
