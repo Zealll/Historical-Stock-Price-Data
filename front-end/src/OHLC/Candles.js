@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import GreenDays from './GreenDays.js'
 import RedDays from './RedDays.js'
@@ -9,7 +9,7 @@ const Candles = props => {
     const [open, setOpen] = useState([])
     const [close, setClose] = useState([])
     const [high, setHigh] = useState([])
-    const [time, setTime] = useState([])
+    // const [time, setTime] = useState([])
     const [years, setYears] = useState(1)
     const [gapPercentage, setGapPercentage] = useState(0)
     const [ticker, setTicker] = useState('')
@@ -40,7 +40,7 @@ const Candles = props => {
             } else {
                 setClose(res.data.c)
                 setOpen(res.data.o)
-                setTime(res.data.t)
+                // setTime(res.data.t)
                 setHigh(res.data.h)
                 setFilter(true)
             }
@@ -71,7 +71,7 @@ const Candles = props => {
           
       
           if (gapUp*100/closePrice > gapPercentage) {
-            let timeStamp = new Date(time[i]*1000).toLocaleDateString("en-US")
+            // let timeStamp = new Date(time[i]*1000).toLocaleDateString("en-US")
     
             if (open[i] > close[i]) {
                 let avgDownFromOpen = (open[i] - close[i]) / open[i] * 100
