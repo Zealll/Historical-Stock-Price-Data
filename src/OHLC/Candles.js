@@ -101,7 +101,7 @@ const Candles = props => {
                 />
                 <div className='flex'>
                     <RedDays stats={stats}/>
-                    <div>
+                    <div className='basic-stats'>
                         <h3><span className='red-span'>Red</span> vs <span className='green-span'>Green</span></h3>
                         {stats.avgDownFromOpen.length + stats.avgUpFromOpen.length === 0 ? <h6><span className='red-span'>0%</span> / <span className='green-span'>0%</span></h6> : <h6><span className='red-span'>{((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100).toFixed(1)}%</span> / <span className='green-span'>{(100 - ((stats.avgDownFromOpen.length / (stats.avgDownFromOpen.length + stats.avgUpFromOpen.length)) * 100)).toFixed(1)}%</span></h6>}
                     </div>
